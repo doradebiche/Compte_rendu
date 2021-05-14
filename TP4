@@ -20,7 +20,7 @@ Création,lecture, modification de structure et suppression de tables.
 CREATE ROLE ROLEDEV1;
 GRANT CREATE PROCEDURE,CREATE VIEW,CREATE SEQUENCE,CREATE SESSION
 ,CREATE TABLE,SELECT TABLE,UPDATE TABLE,DELETE TABLE TO ROLEDEV1;
-
+GRANT ROLEDEV1 TO DEV1;
 
 Révoquer tous les privilèges associès à l'utilisateur dev1 :
 REVOKE ROLEDEV1 FROM DEV1;
