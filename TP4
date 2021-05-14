@@ -1,0 +1,151 @@
+Créer les nouveaux utilisateurs comme suit:
+A)Equipe Dev:
+CREATE USER DEV1 IDENTIFIED BY DEV1
+CREATE USER DEV2 IDENTIFIED BY DEV2;
+B)Equipe test:
+CREATE USER TESTER1 IDENTIFIED BY TESTER1
+CREATE USER TESTER2 IDENTIFIED BY TESTER2;
+C)Ecipe DevSecOps:
+CREATE USER DEVSECOPS1 IDENTIFIED BY DEVSECOPS1
+CREATE UDER DEVSECOPS2 IDENTIFIED BY DEVSECOPS2;
+
+Attribuer les privilèges ci-dessous à l'utilisateur dev1 :
+
+Création de procédures stockées.
+Création de vue.
+Création de séquence.
+Création de session.
+Création,lecture, modification de structure et suppression de tables.
+
+CREATE ROLE ROLEDEV1;
+GRANT CREATE PROCEDURE,CREATE VIEW,CREATE SEQUENCE,CREATE SESSION
+,CREATE TABLE,SELECT TABLE,UPDATE TABLE,DELETE TABLE TO ROLEDEV1;
+
+
+Révoquer tous les privilèges associès à l'utilisateur dev1 :
+REVOKE ROLEDEV1 FROM DEV1;
+
+
+
+Créer des rôles dédiés pour chaque Equipe d'utilisateurs en réspectant les critères suivants
+
+A) Le rôle de l'équipe Dev permet de:
+
+Création de procédures stockées.
+Création de vue.
+Création de séquence.
+Création de session.
+Création,lecture, modification de structure et suppression de tables.
+
+CREATE ROLE ROLEDEV;
+GRANT CREATE PROCEDURE,CREATE VIEW,CREATE SEQUENCE,CREATE SESSION,CREATE ANY TABLE,READ ANY TABLE,UPDATE ANY TABLE,DELETE ANY TABLE TO ROLEDEV;
+
+
+B) Le rôle de l'équipe Test permet de:
+
+Se connecter à la base de données.
+Création de session.
+Lecture données de toutes les tables.
+
+CREATE ROLE ROLETEST;
+GRANT CONNECT,CREATE SESSION,SELECT ANY TABLE TO ROLETEST;
+
+
+C) Le rôle de l'équipe DevSecOps permet d'avoir tous les privilèges avec mode administrateur de la base:
+CREATE ROLE ROLEDEVSECOPS;
+GRANT* TO ROLEDEVSECOPS;
+
+Attribuer à chaque utilisateur, le rôle qui lui correspond:
+
+GRANT ROLEDEV TO DEV1;
+GRANT ROLEDEV TO DEV2;
+GRANT ROLETEST TO TESTER1;
+GRANT ROLETEST TO TESTER2;
+GRANT ROLEDEVSECOPS TO DEVSECOPS1;
+GRANT ROLEDEVSECOPS TO DEVSECOPS2;
+
+Limiter l'accès pour les testeurs de sorte qu'ils n'accèdent qu'à la table des employés "EMP":
+GRANT SELECT EMP TO TESTER1
+GRANT SELECT EMP TO TESTER2;
+
+Autoriser tous les utilisateurs sur le système pour interroger les données de la table EMP :
+GRANT SELECT EMP TO PUBLIC;
+
+
+
+
+Créer un profile de ressources dédié à l'équipe des développeurs avec les limitations suivantes:
+
+Nombre maximal de sessions permises par utilisateur: illimité
+Nombre maximal de CPU par session: 10000
+Nombre maximal de CPU par appel à la base : 1000
+Durée maximal en secondes d'une session: 45
+Nombre maximal de lectures logiques par session utilisateur: Valeur par defaut
+Nombre maximal de lectures logiques par appel à la base: 1000
+Taille maximale de l'SGA privée: 25K
+Durée de vie en jours du mot de passe: 60
+Nombre maximal de réutilisations de mot de passe: 10
+
+CREATE PROFILE DEVRESSOURCES
+LIMIT
+SESSIONS_PER_USER UNLIMITED
+CPU_PER_SESSION 10000
+CPU_PER_CALL 1000
+CONNECT_TIME 45
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 1000
+PRIVATE_SGA 25
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_MAX 10;
+
+Créer un profile de ressources dédié à l'équipe de test avec les limitations suivantes:
+
+Nombre maximal de sessions permises par utilisateur: 5
+Nombre maximal de CPU par session: illimité
+Nombre maximal de CPU par appel à la base : 3000
+Durée maximal en secondes d'une session: 45
+Nombre maximal de lectures logiques par session utilisateur: Valeur par defaut
+Nombre maximal de lectures logiques par appel à la base: 1000
+Taille maximale de l'SGA privée: 25K
+Durée de vie en jours du mot de passe: 60
+Nombre maximal de réutilisations de mot de passe: 10
+
+CREATE PROFILE TESTRESSOURCES 
+LIMIT
+SESSIONS_PER_USER 5
+CPU_PER_SESSION UNLIMITED
+CPU_PER_CALL 3000
+CONNECT_TIME 45
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 1000
+PRIVATE_SGA 25
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_MAX 10;
+
+Créer un profile de ressources dédié à l'équipe devsecops avec les limitations suivantes:
+
+Nombre maximal de sessions permises par utilisateur: illimité
+Nombre maximal de CPU par session: illimité
+Nombre maximal de CPU par appel à la base : 3000
+Durée maximal en secondes d'une session: 3600
+Nombre maximal de lectures logiques par session utilisateur: Valeur par defaut
+Nombre maximal de lectures logiques par appel à la base: 5000
+Taille maximale de l'SGA privée: 80K
+Durée de vie en jours du mot de passe: 60
+Nombre maximal de réutilisations de mot de passe: 10
+
+CREATE PROFILE DEVSECOPSRESOURCES 
+LIMIT
+SESSIONS_PER_USER UNLIMITED
+CPU_PER_SESSION UNLIMITED
+CPU_PER_CALL 3000
+CONNECT_TIME 3600
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 5000
+PRIVATE_SGA 80
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_MAX 10;
+
+
+Attribuer à l'utilisateur "dev1", le profile qui lui correspond:
+ALTER USER DEV1 IDENTIFIEND BY DEV1 PROFILE DEVRESOURCES;
